@@ -1,36 +1,30 @@
-import pytesseract
+import os
 from PIL import Image
-from pdf2image import convert_from_path
-from PyPDF2 import PdfReader
+import pytesseract
+import pdf2image
 
-def extract_text(file_path):
+def extrair_texto_arquivo(caminho_arquivo):
+    extensao = os.path.splitext(caminho_arquivo)[1].lower()
+    texto_completo = ""
+    
     try:
-        if file_path.endswith(".pdf"):
-            text = ""
-
-            try:
-                reader = PdfReader(file_path)
-                for page in reader.pages:
-                    t = page.extract_text()
-                    if t:
-                        text += t
-            except:
-                pass
-
-            if len(text.strip()) < 100:
-                images = convert_from_path(file_path)
-                text = ""
-                for img in images:
-                    text += pytesseract.image_to_string(img)
-
-            return text
-
-        elif file_path.lower().endswith(("png","jpg","jpeg")):
-            return pytesseract.image_to_string(Image.open(file_path))
-
-        elif file_path.endswith(".txt"):
-            return open(file_path).read()
-
+        if extensao == '.pdf':
+            imagens = pdf2image.convert_from_path(caminho_arquivo, dpi=300)
+            for i, imagem in enumerate(imagens):
+                texto_pagina = pytesseract.image_to_string(imagem, lang='por')
+                texto_completo += f"\n--- PAGINA {i+1} ---\n{texto_pagina}"
+        elif extensao in ['.png', '.jpg', '.jpeg']:
+            imagem = Image.open(caminho_arquivo)
+            texto_completo = pytesseract.image_to_string(imagem, lang='por')
+        elif extensao == '.txt':
+            with open(caminho_arquivo, 'r', encoding='utf-8') as f:
+                texto_completo = f.read()
+        else:
+            return f"Formato nao suportado: {extensao}"
+        
+        return texto_completo.strip() if texto_completo else "Nenhum texto encontrado"
     except Exception as e:
-        return str(e)
+        return f"Erro no OCR: {str(e)}"
 
+# Alias para compatibilidade
+extract_text = extrair_texto_arquivo

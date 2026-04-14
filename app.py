@@ -1,6 +1,6 @@
 from flask import Flask, request, jsonify, render_template
 import os
-from ocr import extract_text
+from ocr import extrair_texto_arquivo as extract_text
 from parser import parse_data
 from ai_parser import parse_with_ai
 from database import save_to_db
@@ -38,4 +38,4 @@ def upload():
 
     return jsonify(data)
 
-app.run(debug=True)
+app.run(host='0.0.0.0', debug=True, port=5010)
