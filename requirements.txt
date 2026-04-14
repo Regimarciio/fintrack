@@ -1,0 +1,11 @@
+
+flask
+pytesseract
+pillow
+pdf2image
+PyPDF2
+streamlit
+pandas
+openai
+
+

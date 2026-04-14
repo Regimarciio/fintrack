@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Upload de Nota Fiscal</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+.dropzone {
+    margin: 100px auto;
+    width: 400px;
+    padding: 40px;
+    border: 2px dashed #38bdf8;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.dropzone:hover {
+    background: #1e293b;
+}
+
+#result {
+    margin-top: 20px;
+    white-space: pre-wrap;
+    text-align: left;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📄 Upload de Nota / Fatura</h1>
+
+<div class="dropzone" id="dropzone">
+    Arraste o arquivo aqui ou clique
+</div>
+
+<input type="file" id="fileInput" hidden>
+
+<pre id="result"></pre>
+
+<script>
+const dropzone = document.getElementById("dropzone");
+const fileInput = document.getElementById("fileInput");
+const result = document.getElementById("result");
+
+dropzone.onclick = () => fileInput.click();
+
+fileInput.onchange = () => {
+    uploadFile(fileInput.files[0]);
+};
+
+dropzone.ondragover = (e) => {
+    e.preventDefault();
+    dropzone.style.background = "#1e293b";
+};
+
+dropzone.ondragleave = () => {
+    dropzone.style.background = "transparent";
+};
+
+dropzone.ondrop = (e) => {
+    e.preventDefault();
+    dropzone.style.background = "transparent";
+    uploadFile(e.dataTransfer.files[0]);
+};
+
+function uploadFile(file) {
+    let formData = new FormData();
+    formData.append("file", file);
+
+    fetch("/upload", {
+        method: "POST",
+        body: formData
+    })
+    .then(res => res.json())
+    .then(data => {
+        result.textContent = JSON.stringify(data, null, 2);
+    })
+    .catch(err => {
+        result.textContent = "Erro: " + err;
+    });
+}
+</script>
+
+</body>
+</html>

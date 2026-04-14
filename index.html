@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<body style="background:#111;color:#fff;text-align:center">
+
+<h1>Upload de Fatura</h1>
+
+<input type="file" id="file">
+
+<pre id="res"></pre>
+
+<script>
+document.getElementById("file").onchange = async (e)=>{
+    let f = e.target.files[0]
+    let fd = new FormData()
+    fd.append("file", f)
+
+    let r = await fetch("/upload",{method:"POST",body:fd})
+    let j = await r.json()
+
+    document.getElementById("res").textContent = JSON.stringify(j,null,2)
+}
+</script>
+
+</body>
+</html>
